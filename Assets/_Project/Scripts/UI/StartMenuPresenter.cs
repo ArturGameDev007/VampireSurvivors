@@ -1,4 +1,5 @@
 using Fusion;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -56,14 +57,13 @@ namespace _Project.Scripts.UI
                 return;
             }
 
-            if (enterIdRoom.Length > countNumberId)
+            if (enterIdRoom.Length != countNumberId)
             {
                 Debug.Log("Код ID должен состояить из 4 цифр.");
                 return;
             }
 
             _startMenuView.gameObject.SetActive(false);
-            _createdRoomView.gameObject.SetActive(true);
 
             StartFusionSession(GameMode.Client, enterIdRoom);
         }
@@ -78,8 +78,11 @@ namespace _Project.Scripts.UI
 
             var sceneManager = currentRunner.GetComponent<NetworkSceneManagerDefault>();
 
-            int gameplaySceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
+            if (sceneManager == null)
+                sceneManager = currentRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
 
+            int gameplaySceneIndex = SceneManager.GetActiveScene().buildIndex + 1; 
+            
             currentRunner.StartGame(new StartGameArgs()
             {
                 GameMode = mode,
