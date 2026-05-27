@@ -1,14 +1,13 @@
+using _Project.Scripts.Services.PhotonFusion;
 using Fusion;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 namespace _Project.Scripts.UI
 {
     public class StartMenuPresenter : MonoBehaviour
     {
-        [SerializeField] private NetworkRunner _sessionPrefab;
+        [SerializeField] private FusionConnector _fusionConnector;
         [SerializeField] private StartMenuView _startMenuView;
         [SerializeField] private CreatedRoomView _createdRoomView;
 
@@ -42,7 +41,7 @@ namespace _Project.Scripts.UI
             _startMenuView.gameObject.SetActive(false);
             _createdRoomView.gameObject.SetActive(true);
 
-            StartFusionSession(GameMode.Host, randomID);
+            _fusionConnector.StartFusionSession(GameMode.Host, randomID).Forget();
         }
 
         private void OnJoinButtonClicked()
@@ -65,33 +64,7 @@ namespace _Project.Scripts.UI
 
             _startMenuView.gameObject.SetActive(false);
 
-            StartFusionSession(GameMode.Client, enterIdRoom);
-        }
-
-        private void StartFusionSession(GameMode mode, string roomName)
-        {
-            if (_sessionPrefab == null)
-                return;
-
-            NetworkRunner currentRunner = Instantiate(_sessionPrefab);
-            currentRunner.name = "PhotonSession";
-
-            var sceneManager = currentRunner.GetComponent<NetworkSceneManagerDefault>();
-
-            if (sceneManager == null)
-                sceneManager = currentRunner.gameObject.AddComponent<NetworkSceneManagerDefault>();
-
-            int gameplaySceneIndex = SceneManager.GetActiveScene().buildIndex + 1; 
-            
-            currentRunner.StartGame(new StartGameArgs()
-            {
-                GameMode = mode,
-                SessionName = roomName,
-                Scene = SceneRef.FromIndex(gameplaySceneIndex),
-                SceneManager = sceneManager
-            });
-
-            Debug.Log($"Сеть запущена в режиме: {mode}. Комната: {roomName}");
+            _fusionConnector.StartFusionSession(GameMode.Client, enterIdRoom).Forget();
         }
     }
 }

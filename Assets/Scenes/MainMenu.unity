@@ -392,7 +392,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53f099171e2b4c17a7470cdc7ec041ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sessionPrefab: {fileID: 5425469110536178165, guid: 70680128643b8094c8e371e46b93d671, type: 3}
+  _fusionConnector: {fileID: 937835631801013715, guid: c5e65ef6efcaea5448481d1fa0518a49, type: 3}
   _startMenuView: {fileID: 526212684}
   _createdRoomView: {fileID: 21419202}
 --- !u!4 &1450509819
@@ -486,14 +486,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1726100422413159513, guid: ec462e96886d4854f9fa9ab5cb5b1c11, type: 3}
-      propertyPath: m_VerticalAlignment
-      value: 512
-      objectReference: {fileID: 0}
-    - target: {fileID: 1726100422413159513, guid: ec462e96886d4854f9fa9ab5cb5b1c11, type: 3}
-      propertyPath: m_HorizontalAlignment
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 3890182275688439713, guid: ec462e96886d4854f9fa9ab5cb5b1c11, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -578,9 +570,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: StartMenu-UI
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 1728727628151126400, guid: ec462e96886d4854f9fa9ab5cb5b1c11, type: 3}
-    - {fileID: 1383870085803454416, guid: ec462e96886d4854f9fa9ab5cb5b1c11, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
