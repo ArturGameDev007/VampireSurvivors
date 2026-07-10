@@ -41,7 +41,7 @@ namespace _Project.Scripts.UI
             _startMenuView.gameObject.SetActive(false);
             _createdRoomView.gameObject.SetActive(true);
 
-            _fusionConnector.StartFusionSession(GameMode.Host, randomID).Forget();
+            _fusionConnector.StartFusionSession(GameMode.Host, randomID);
         }
 
         private void OnJoinButtonClicked()
@@ -64,7 +64,7 @@ namespace _Project.Scripts.UI
 
             _startMenuView.gameObject.SetActive(false);
 
-            _fusionConnector.StartFusionSession(GameMode.Client, enterIdRoom).Forget();
+            _fusionConnector.StartFusionSession(GameMode.Client, enterIdRoom);
         }
     }
 }
