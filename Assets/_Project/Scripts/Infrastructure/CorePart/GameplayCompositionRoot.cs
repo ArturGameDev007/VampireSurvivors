@@ -4,6 +4,7 @@ using _Project.Scripts.Infrastructure.Player;
 using _Project.Scripts.Infrastructure.Player.Shoot;
 using _Project.Scripts.Infrastructure.Pool;
 using _Project.Scripts.Services.PhotonFusion;
+using _Project.Scripts.UI.Health;
 using _Project.Scripts.UI.PlayerMovement;
 using Fusion;
 using UnityEngine;
@@ -33,20 +34,11 @@ namespace _Project.Scripts.Infrastructure.CorePart
             _runner = fusionConnector.ActiveRunnerInstance;
 
             IPlayerProvider playerProvider = new PlayerProvider();
+            PlayerRegistry playerRegistry = new PlayerRegistry();
             EnemyRegistry enemyRegistry = new EnemyRegistry();
 
-            // SetupPools(out Transform enemyContainer, out Transform shootsContainer);
-
-            // var poolProvider = fusionConnector.ObjectProvider;
-            //
-            // if (poolProvider != null)
-            // {
-            //     poolProvider.InitializeContainers(enemyContainer, shootsContainer);
-            // }
-
-            IGameFactory gameFactory = new GameFactory(_bulletPrefab, enemyRegistry);
-            _generateEnemies = new GenerateEnemies(_prefabEnemies, _runner, playerProvider, enemyRegistry);
-            // GenerateBullets generateBullets = new GenerateBullets(_runner, _bulletPool, enemyRegistry);
+            IGameFactory gameFactory = new GameFactory(_bulletPrefab, enemyRegistry, playerRegistry);
+            _generateEnemies = new GenerateEnemies(_prefabEnemies, _runner, playerProvider, playerRegistry, enemyRegistry);
             EnemySpawnController enemySpawnController = new EnemySpawnController(gameFactory, _generateEnemies);
 
             return new GameManager(_runner, gameFactory, _characterPrefab, _generateEnemies, enemySpawnController,

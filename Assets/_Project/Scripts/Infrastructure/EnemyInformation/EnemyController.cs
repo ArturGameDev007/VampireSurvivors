@@ -12,11 +12,25 @@ namespace _Project.Scripts.Infrastructure.EnemyInformation
         [SerializeField] private float _speed;
 
         private IPlayerProvider _playerProvider;
+        private PlayerRegistry _playerRegistry;
         private Rigidbody2D _rigidbody2D;
 
         private bool _canMove = true;
 
         [Networked] public Character Target { get; private set; }
+
+        public void Initialize(PlayerRegistry playerRegistry)
+        {
+            _playerRegistry = playerRegistry;
+        }
+
+        // public void Initialize(IPlayerProvider player)
+        // {
+        //     _playerProvider = player;
+        //
+        //     if (_playerProvider != null && _playerProvider.PlayerTransform != null)
+        //         Target = _playerProvider.PlayerTransform;
+        // }
 
         public override void Spawned()
         {
@@ -24,16 +38,15 @@ namespace _Project.Scripts.Infrastructure.EnemyInformation
             _rigidbody2D.bodyType = RigidbodyType2D.Kinematic;
         }
 
-        public void Initialize(IPlayerProvider player)
-        {
-            _playerProvider = player;
-
-            if (_playerProvider != null && _playerProvider.PlayerTransform != null)
-                Target = _playerProvider.PlayerTransform;
-        }
-
         public override void FixedUpdateNetwork()
         {
+            if (!Runner.IsServer || _playerRegistry == null)
+            {
+                return;
+            }
+            
+            Target = _playerRegistry.GetClosestTo(_rigidbody2D.position);
+            
             if (!_canMove || Target == null)
                 return;
 

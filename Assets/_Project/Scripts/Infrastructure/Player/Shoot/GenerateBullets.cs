@@ -28,7 +28,7 @@ namespace _Project.Scripts.Infrastructure.Player.Shoot
         {
             if (!_runner.IsServer) 
                 return;
-            
+
             float minTimerThreshold = 0f;
 
             _spawnTimer -= _runner.DeltaTime;

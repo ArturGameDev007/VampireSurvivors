@@ -2,7 +2,6 @@ using System;
 using _Project.Scripts.Infrastructure.EnemyInformation;
 using _Project.Scripts.Infrastructure.Player;
 using _Project.Scripts.Infrastructure.Player.Shoot;
-using _Project.Scripts.Infrastructure.Pool;
 using Fusion;
 using UnityEngine;
 
@@ -15,11 +14,13 @@ namespace _Project.Scripts.Infrastructure
         // private readonly NetworkPool<Bullet>  _bulletPool;
         private readonly Bullet _bulletprefab;
         private readonly EnemyRegistry _enemyRegistry;
+        private readonly PlayerRegistry _playerRegistry;
 
-        public GameFactory(Bullet prefab, EnemyRegistry enemyRegistry)
+        public GameFactory(Bullet prefab, EnemyRegistry enemyRegistry, PlayerRegistry playerRegistry)
         {
             _bulletprefab = prefab;
             _enemyRegistry = enemyRegistry;
+            _playerRegistry = playerRegistry;
         }
 
         public void CreatePlayer(NetworkRunner runner, Character prefab, PlayerRef player)
@@ -33,10 +34,12 @@ namespace _Project.Scripts.Infrastructure
 
             Character newPlayer = runner.Spawn(prefab, spawnPosition, Quaternion.identity, player);
 
+            newPlayer.Initialize(_playerRegistry);
+            _playerRegistry.Register(newPlayer);
+
             if (player == runner.LocalPlayer)
             {
                 newPlayer.gameObject.name = "[LOCAL_HOST_PLAYER]";
-
                 OnCharacterCreated?.Invoke(newPlayer);
             }
             else

@@ -10,15 +10,16 @@ namespace _Project.Scripts.Infrastructure.Player
     {
         [SerializeField] private float _moveSpeed = 4f;
 
-        [Header("Player Bounds")] [SerializeField]
-        private Vector2 _minBounds;
-
+        [Header("Player Bounds")]
+        [SerializeField] private Vector2 _minBounds;
         [SerializeField] private Vector2 _maxBounds;
 
         private Rigidbody2D _head;
         private Vector2 _moveDirection;
 
         private bool _isMovingLeft;
+        
+        public Vector2 Position => transform.position;
 
         public override void Spawned()
         {

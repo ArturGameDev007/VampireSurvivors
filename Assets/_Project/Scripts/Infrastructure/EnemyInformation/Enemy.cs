@@ -1,4 +1,5 @@
 using System;
+using _Project.Scripts.Infrastructure.Player;
 using _Project.Scripts.Infrastructure.Player.Shoot;
 using _Project.Scripts.Infrastructure.Pool;
 using Fusion;
@@ -10,6 +11,7 @@ namespace _Project.Scripts.Infrastructure.EnemyInformation
     {
         // private NetworkPool<Enemy> _pool;
         private EnemyRegistry _enemyRegistry;
+        [field: SerializeField] public float Damage { get; private set; } = 10f;
         
         public bool IsTargeted { get; set; }
 
@@ -33,6 +35,7 @@ namespace _Project.Scripts.Infrastructure.EnemyInformation
                 Kill();
             }
         }
+
 
         private void Kill()
         {

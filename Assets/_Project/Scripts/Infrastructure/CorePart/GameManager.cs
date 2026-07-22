@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using _Project.Scripts.Infrastructure.EnemyInformation;
 using _Project.Scripts.Infrastructure.Player;
 using _Project.Scripts.Infrastructure.Player.Shoot;
+using _Project.Scripts.UI.Health;
 using _Project.Scripts.UI.PlayerMovement;
 using Fusion;
 using Fusion.Sockets;
@@ -19,6 +20,8 @@ namespace _Project.Scripts.Infrastructure.CorePart
         private readonly IFixedJoystickController _joystick;
 
         private bool _isInitialized;
+
+        private Character _localCharacter;
 
         public GameManager(NetworkRunner runner, IGameFactory gameFactory, Character character,
             GenerateEnemies generateEnemies, EnemySpawnController spawnController,
@@ -67,7 +70,7 @@ namespace _Project.Scripts.Infrastructure.CorePart
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
-            if (_runner.IsServer)
+            if (runner.IsServer)
             {
                 _gameFactory.CreatePlayer(_runner, _character, player);
             }
@@ -109,7 +112,7 @@ namespace _Project.Scripts.Infrastructure.CorePart
 
         public void OnInput(NetworkRunner runner, NetworkInput input)
         {
-            var gameplay = new InputController();
+            InputController gameplay = default;
 
             if (_joystick != null && _joystick.Joystick != null)
             {

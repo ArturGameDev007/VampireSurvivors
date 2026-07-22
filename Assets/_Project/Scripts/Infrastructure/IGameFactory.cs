@@ -1,5 +1,6 @@
 using System;
 using _Project.Scripts.Infrastructure.Player;
+using _Project.Scripts.UI.Health;
 using Fusion;
 
 namespace _Project.Scripts.Infrastructure

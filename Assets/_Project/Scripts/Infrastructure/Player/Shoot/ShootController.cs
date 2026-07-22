@@ -20,10 +20,7 @@ namespace _Project.Scripts.Infrastructure.Player.Shoot
             if (_generateBullets == null)
                 return;
 
-            if (HasInputAuthority)
-            {
-                _generateBullets.Process(_pointBullet);
-            }
+            _generateBullets.Process(_pointBullet);
         }
     }
 }

@@ -13,22 +13,24 @@ namespace _Project.Scripts.Infrastructure.EnemyInformation
         private readonly Enemy[] _prefab;
         private readonly NetworkRunner _runner;
         private readonly IPlayerProvider _playerProvider;
+        private readonly PlayerRegistry  _playerRegistry;
         private readonly EnemyRegistry _enemyRegistry;
 
         private float _spawnTimer;
-        private float _delay = 1f;
+        private float _delay = 0.5f;
         private float _minRadius = 15f;
         private float _maxRadius = 16f;
 
         private bool _isActiveGame = true;
 
         public GenerateEnemies(Enemy[] prefab, NetworkRunner runner,
-            IPlayerProvider playerProvider, EnemyRegistry enemyRegistry)
+            IPlayerProvider playerProvider, PlayerRegistry playerRegistry, EnemyRegistry enemyRegistry)
         {
             // _enemyPool = pool;
             _prefab = prefab;
             _runner = runner;
             _playerProvider = playerProvider;
+            _playerRegistry = playerRegistry;
             _enemyRegistry = enemyRegistry;
         }
 
@@ -79,7 +81,7 @@ namespace _Project.Scripts.Infrastructure.EnemyInformation
             enemySpawned.Initialize(_enemyRegistry);
 
             if (enemySpawned.TryGetComponent(out EnemyController enemyController))
-                enemyController.Initialize(_playerProvider);
+                enemyController.Initialize(_playerRegistry);
         }
 
         private Vector3 GetRandomPoint()
