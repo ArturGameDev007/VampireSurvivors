@@ -1,4 +1,4 @@
-namespace _Project.Scripts.UI.PlayerMovement
+namespace _Project.Scripts.UI.CharacterMovementController
 {
     public interface IFixedJoystickController
     {

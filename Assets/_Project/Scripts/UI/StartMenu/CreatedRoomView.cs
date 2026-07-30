@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace _Project.Scripts.UI
+namespace _Project.Scripts.UI.StartMenu
 {
     public class CreatedRoomView : MonoBehaviour
     {

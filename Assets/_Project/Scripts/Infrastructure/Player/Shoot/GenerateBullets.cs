@@ -8,14 +8,15 @@ namespace _Project.Scripts.Infrastructure.Player.Shoot
     public class GenerateBullets
     {
         private readonly NetworkRunner _runner;
-        // private readonly NetworkPool<Bullet> _bulletPool;
-        // private readonly ObjectPool<Bullet> _bulletPool;
         private readonly Bullet _prefab;
         private readonly EnemyRegistry _enemyRegistry;
 
         private float _spawnTimer;
+        private float _minDealy = 0.2f;
         private float _delay = 1.5f;
         private float _attackRadius = 10f;
+        
+        public float CurrentDelay => _delay;
 
         public GenerateBullets(NetworkRunner runner, Bullet prefab, EnemyRegistry enemyRegistry)
         {
@@ -45,16 +46,19 @@ namespace _Project.Scripts.Infrastructure.Player.Shoot
             }
         }
 
+        public void IncreaseSpeedShoot(float percent)
+        {
+            _delay = Mathf.Max(_minDealy, _delay - _delay *  percent);
+        }
+
         private void SpawnShoot(Transform shootPoint, Enemy enemyTarget)
         {
-            // Bullet bullet = _bulletPool.GetObject(_runner);
             Bullet bullet = _runner.Spawn(_prefab, shootPoint.position, Quaternion.identity);
 
             if (bullet == null)
                 return;
 
             bullet.transform.position = shootPoint.position;
-            // bullet.Init(_bulletPool);
             
             enemyTarget.IsTargeted = true;
 

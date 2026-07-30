@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 937835631801013715}
   - component: {fileID: -553548629920174834}
   - component: {fileID: -8866443753590869397}
+  - component: {fileID: -4870745219857708881}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -92,3 +93,16 @@ MonoBehaviour:
   ClientPhysicsSimulation: 3
   DeltaTimeMultiplier: 1
   SetUnityFixedTimestep: 0
+--- !u!114 &-4870745219857708881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6053836611367434714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d23962b0fd241c096bb1d0fca55b9ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DelayIfSceneManagerIsBusy: 1

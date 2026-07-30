@@ -26,14 +26,7 @@ namespace _Project.Scripts.Infrastructure.CorePart
 
         public override void FixedUpdateNetwork()
         {
-            if (HasStateAuthority)
-            {
-                if (_gameManager != null)
-                {
-                    _gameManager.Tick();
-                }
-                
-            }
+            _gameManager?.Tick();
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
@@ -43,33 +36,5 @@ namespace _Project.Scripts.Infrastructure.CorePart
 
             _gameManager.Destroy();
         }
-
-        // private void Awake()
-        // {
-        //     _gameManager = _gameplayCompositionRoot.Compose(_fusionConnector);
-        // }
-        //
-        // private void Start()
-        // {
-        //     _runner = _fusionConnector.ActiveRunnerInstance;
-        //
-        //     if (_runner != null)
-        //         _runner.AddCallbacks(_gameManager);
-        //
-        //     _gameManager.Initialize();
-        // }
-        //
-        // private void Update()
-        // {
-        //     _gameManager.Tick();
-        // }
-        //
-        // private void OnDestroy()
-        // {
-        //     if (_runner != null)
-        //         _runner.RemoveCallbacks(_gameManager);
-        //
-        //     _gameManager.Destroy();
-        // }
     }
 }

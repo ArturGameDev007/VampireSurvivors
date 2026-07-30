@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using _Project.Scripts.Infrastructure.EnemyInformation;
 using _Project.Scripts.Infrastructure.Player;
-using _Project.Scripts.Infrastructure.Player.Shoot;
-using _Project.Scripts.UI.Health;
-using _Project.Scripts.UI.PlayerMovement;
+using _Project.Scripts.UI.CharacterMovementController;
 using Fusion;
 using Fusion.Sockets;
+using UnityEngine.SceneManagement;
 
 namespace _Project.Scripts.Infrastructure.CorePart
 {
@@ -17,22 +16,22 @@ namespace _Project.Scripts.Infrastructure.CorePart
         private readonly Character _character;
         private readonly GenerateEnemies _generateEnemies;
         private readonly EnemySpawnController _spawnController;
-        private readonly IFixedJoystickController _joystick;
+        private readonly PlayerRegistry _playerRegistry;
+        private readonly IFixedJoystickController _joystickController;
 
         private bool _isInitialized;
-
-        private Character _localCharacter;
+        private bool _isReturnToLobby;
 
         public GameManager(NetworkRunner runner, IGameFactory gameFactory, Character character,
-            GenerateEnemies generateEnemies, EnemySpawnController spawnController,
-            IFixedJoystickController joystick)
+            GenerateEnemies generateEnemies, EnemySpawnController spawnController, PlayerRegistry playerRegistry, IFixedJoystickController joystickController)
         {
             _runner = runner;
             _gameFactory = gameFactory;
             _character = character;
             _generateEnemies = generateEnemies;
             _spawnController = spawnController;
-            _joystick = joystick;
+            _playerRegistry = playerRegistry;
+            _joystickController = joystickController;
         }
 
         public void Initialize()
@@ -48,6 +47,8 @@ namespace _Project.Scripts.Infrastructure.CorePart
         public void Tick()
         {
             _generateEnemies?.Process();
+            
+            CheckNextLevel();
         }
 
         public void Destroy()
@@ -82,10 +83,12 @@ namespace _Project.Scripts.Infrastructure.CorePart
 
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
+            ReturnToLobbyOnce();
         }
 
         public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
         {
+            ReturnToLobbyOnce();
         }
 
         public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request,
@@ -112,15 +115,10 @@ namespace _Project.Scripts.Infrastructure.CorePart
 
         public void OnInput(NetworkRunner runner, NetworkInput input)
         {
-            InputController gameplay = default;
-
-            if (_joystick != null && _joystick.Joystick != null)
-            {
-                gameplay.HorizontalInput = _joystick.Joystick.Horizontal;
-                gameplay.VerticalInput = _joystick.Joystick.Vertical;
-            }
-
-            input.Set(gameplay);
+            InputController controller = default;
+            
+            controller.GetJoystick(_joystickController);
+            input.Set(controller);
         }
 
         public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
@@ -149,6 +147,31 @@ namespace _Project.Scripts.Infrastructure.CorePart
 
         public void OnSceneLoadStart(NetworkRunner runner)
         {
+        }
+
+        private void CheckNextLevel()
+        {
+            foreach (var player in _playerRegistry.AddPlayers)
+            {
+                if (player == null)
+                    continue;
+
+                if (player.CurrentExperience < player.MaxExperience)
+                    continue;
+
+                int nextLevel = 1;
+
+                player.NextLevel(player.CurrentLevel + nextLevel);
+            }
+        }
+
+        private void ReturnToLobbyOnce()
+        {
+            if (_isReturnToLobby)
+                return;
+
+            _isReturnToLobby = true;
+            SceneManager.LoadScene("MainMenu");
         }
     }
 }

@@ -14,10 +14,6 @@ namespace _Project.Scripts.UI.Health
                 _slider.maxValue = maxHealth;
                 _slider.value = currentHealth;
             }
-            else
-            {
-                Debug.LogWarning("Slider is null!");
-            }
         }
     }
 }

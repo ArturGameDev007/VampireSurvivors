@@ -1,6 +1,5 @@
-using System.Collections.Generic;
+using _Project.Scripts.Infrastructure.Items;
 using _Project.Scripts.Infrastructure.Player;
-using _Project.Scripts.Infrastructure.Pool;
 using Fusion;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -9,12 +8,13 @@ namespace _Project.Scripts.Infrastructure.EnemyInformation
 {
     public class GenerateEnemies
     {
-        // private readonly NetworkPool<Enemy>[] _enemyPool;
         private readonly Enemy[] _prefab;
         private readonly NetworkRunner _runner;
         private readonly IPlayerProvider _playerProvider;
-        private readonly PlayerRegistry  _playerRegistry;
+        private readonly PlayerRegistry _playerRegistry;
         private readonly EnemyRegistry _enemyRegistry;
+        private readonly SpawnPotion _spawnPotion;
+        private readonly SpawnDiamond _spawnDiamond;
 
         private float _spawnTimer;
         private float _delay = 0.5f;
@@ -24,14 +24,16 @@ namespace _Project.Scripts.Infrastructure.EnemyInformation
         private bool _isActiveGame = true;
 
         public GenerateEnemies(Enemy[] prefab, NetworkRunner runner,
-            IPlayerProvider playerProvider, PlayerRegistry playerRegistry, EnemyRegistry enemyRegistry)
+            IPlayerProvider playerProvider, PlayerRegistry playerRegistry, EnemyRegistry enemyRegistry,
+            SpawnPotion spawnPotion, SpawnDiamond spawnDiamond)
         {
-            // _enemyPool = pool;
             _prefab = prefab;
             _runner = runner;
             _playerProvider = playerProvider;
             _playerRegistry = playerRegistry;
             _enemyRegistry = enemyRegistry;
+            _spawnPotion = spawnPotion;
+            _spawnDiamond = spawnDiamond;
         }
 
         public void SetPlayerProvider(Character playerTransform)
@@ -67,18 +69,15 @@ namespace _Project.Scripts.Infrastructure.EnemyInformation
 
             Vector3 spawnPosition = GetRandomPoint();
 
-            // Enemy enemySpawned = _enemyPool[randomEnemy].GetObject(_runner);
             Enemy enemySpawned = _runner.Spawn(_prefab[randomEnemy], spawnPosition, Quaternion.identity);
 
             if (enemySpawned == null)
                 return;
-            
-            // enemySpawned.transform.position = spawnPosition;
+
+            enemySpawned.transform.position = spawnPosition;
 
             _enemyRegistry.Add(enemySpawned);
-
-            // enemySpawned.Initialize(_enemyPool[randomEnemy], _enemyRegistry);
-            enemySpawned.Initialize(_enemyRegistry);
+            enemySpawned.Initialize(_enemyRegistry, _spawnPotion, _spawnDiamond);
 
             if (enemySpawned.TryGetComponent(out EnemyController enemyController))
                 enemyController.Initialize(_playerRegistry);

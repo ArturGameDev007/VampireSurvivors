@@ -1,24 +1,25 @@
+using _Project.Scripts.UI.CharacterMovementController;
 using Fusion;
-using UnityEngine;
 
 namespace _Project.Scripts.Infrastructure.Player
 {
     public struct InputController : INetworkInput
     {
-        // private const string HORIZONTAL = "Horizontal";
-        // private const string VERTICAL = "Vertical";
+        public float HorizontalInput { get; private set; }
+        public float VerticalInput { get; private set; }
 
-        public float HorizontalInput;
-        public float VerticalInput;
-        //
-        // public void UpdateHorizontalInput()
-        // {
-        //     HorizontalInput = Input.GetAxis(HORIZONTAL);
-        // }
-        //
-        // public void UpdateVerticalInput()
-        // {
-        //     VerticalInput = Input.GetAxis(VERTICAL);
-        // }
+        public void GetJoystick(IFixedJoystickController controller)
+        {
+            if (controller != null && controller.Joystick != null)
+            {
+                HorizontalInput = controller.Joystick.Horizontal;
+                VerticalInput = controller.Joystick.Vertical;
+            }
+            else
+            {
+                HorizontalInput = 0f;
+                VerticalInput = 0f;
+            }
+        }
     }
 }

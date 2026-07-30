@@ -1,9 +1,10 @@
 using _Project.Scripts.Services.PhotonFusion;
+using Cysharp.Threading.Tasks;
 using Fusion;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace _Project.Scripts.UI
+namespace _Project.Scripts.UI.StartMenu
 {
     public class StartMenuPresenter : MonoBehaviour
     {
@@ -41,7 +42,7 @@ namespace _Project.Scripts.UI
             _startMenuView.gameObject.SetActive(false);
             _createdRoomView.gameObject.SetActive(true);
 
-            _fusionConnector.StartFusionSession(GameMode.Host, randomID);
+            _fusionConnector.StartFusionSession(GameMode.Host, randomID).Forget();
         }
 
         private void OnJoinButtonClicked()
@@ -62,9 +63,15 @@ namespace _Project.Scripts.UI
                 return;
             }
 
+            if (PlayerPrefs.HasKey($"BannedRoom - {enterIdRoom}"))
+            {
+                Debug.Log("Вы уже погибли в этой комнате и не можете войти.");
+                return;
+            }
+
             _startMenuView.gameObject.SetActive(false);
 
-            _fusionConnector.StartFusionSession(GameMode.Client, enterIdRoom);
+            _fusionConnector.StartFusionSession(GameMode.Client, enterIdRoom).Forget();
         }
     }
 }

@@ -11,16 +11,18 @@ namespace _Project.Scripts.Infrastructure
     {
         public event Action<Character> OnCharacterCreated;
 
-        // private readonly NetworkPool<Bullet>  _bulletPool;
         private readonly Bullet _bulletprefab;
         private readonly EnemyRegistry _enemyRegistry;
         private readonly PlayerRegistry _playerRegistry;
+        private readonly BonusApplier _bonusApplier;
 
-        public GameFactory(Bullet prefab, EnemyRegistry enemyRegistry, PlayerRegistry playerRegistry)
+        public GameFactory( Bullet prefab, EnemyRegistry enemyRegistry,
+            PlayerRegistry playerRegistry, BonusApplier bonusApplier)
         {
             _bulletprefab = prefab;
             _enemyRegistry = enemyRegistry;
             _playerRegistry = playerRegistry;
+            _bonusApplier = bonusApplier;
         }
 
         public void CreatePlayer(NetworkRunner runner, Character prefab, PlayerRef player)
@@ -34,12 +36,11 @@ namespace _Project.Scripts.Infrastructure
 
             Character newPlayer = runner.Spawn(prefab, spawnPosition, Quaternion.identity, player);
 
-            newPlayer.Initialize(_playerRegistry);
+            newPlayer.Initialize(_playerRegistry, _bonusApplier);
             _playerRegistry.Register(newPlayer);
 
             if (player == runner.LocalPlayer)
             {
-                newPlayer.gameObject.name = "[LOCAL_HOST_PLAYER]";
                 OnCharacterCreated?.Invoke(newPlayer);
             }
             else

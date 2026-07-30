@@ -8,53 +8,27 @@ namespace _Project.Scripts.Infrastructure.Player
     [RequireComponent(typeof(NetworkRigidbody2D))]
     public class PlayerMovement : NetworkBehaviour
     {
-        [SerializeField] private float _moveSpeed = 4f;
+        [SerializeField] private float _baseMoveSpeed = 4f;
 
         [Header("Player Bounds")]
         [SerializeField] private Vector2 _minBounds;
         [SerializeField] private Vector2 _maxBounds;
-
+        
         private Rigidbody2D _head;
         private Vector2 _moveDirection;
 
         private bool _isMovingLeft;
-        
+
+        [Networked] public float MoveSpeed { get; set; }
+
         public Vector2 Position => transform.position;
 
         public override void Spawned()
         {
             _head = GetComponent<Rigidbody2D>();
             _head.bodyType = RigidbodyType2D.Kinematic;
-        }
 
-        public override void FixedUpdateNetwork()
-        {
-            Move();
-        }
-
-        private void Move()
-        {
-            if (GetInput(out InputController input))
-            {
-                _moveDirection = new Vector2(input.HorizontalInput, input.VerticalInput).normalized;
-                
-                _head.velocity = _moveDirection * _moveSpeed;
-                
-                Vector2 headPosition = _head.position;
-                
-                float clampedX = Mathf.Clamp(headPosition.x, _minBounds.x, _maxBounds.x);
-                float clampedY = Mathf.Clamp(headPosition.y, _minBounds.y, _maxBounds.y);
-                
-                Vector2 finalPosition = new Vector2(clampedX, clampedY);
-                
-                _head.position = finalPosition;
-                
-                // ClampPosition();
-            }
-            else
-            {
-                _head.velocity = Vector2.zero;
-            }
+            MoveSpeed = _baseMoveSpeed;
         }
 
         public override void Render()
@@ -71,14 +45,31 @@ namespace _Project.Scripts.Infrastructure.Player
             }
         }
 
-        private void ClampPosition()
+        public override void FixedUpdateNetwork()
         {
-            Vector3 currentPosition = transform.position;
+            Move();
+        }
 
-            float clampedX = Mathf.Clamp(currentPosition.x, _minBounds.x, _maxBounds.x);
-            float clampedY = Mathf.Clamp(currentPosition.y, _minBounds.y, _maxBounds.y);
+        private void Move()
+        {
+            if (GetInput(out InputController  controller))
+            {
+                _moveDirection = new Vector2(controller.HorizontalInput, controller.VerticalInput);
+                _head.velocity = _moveDirection * MoveSpeed;
+                
+                Vector2 headPosition = _head.position;
 
-            transform.position = new Vector3(clampedX, clampedY, currentPosition.z);
+                float clampedX = Mathf.Clamp(headPosition.x, _minBounds.x, _maxBounds.x);
+                float clampedY = Mathf.Clamp(headPosition.y, _minBounds.y, _maxBounds.y);
+
+                Vector2 finalPosition = new Vector2(clampedX, clampedY);
+
+                _head.position = finalPosition;
+            }
+            else
+            {
+                _head.velocity = Vector2.zero;
+            }
         }
     }
 }

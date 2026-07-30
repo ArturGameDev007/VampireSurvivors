@@ -1,4 +1,3 @@
-using System;
 using Fusion;
 using UnityEngine;
 
@@ -9,6 +8,7 @@ namespace _Project.Scripts.Infrastructure.Player.Shoot
         [SerializeField] private Transform _pointBullet;
 
         private GenerateBullets _generateBullets;
+        public float CurrentDelayAttack => _generateBullets.CurrentDelay;
 
         public void Initialize(GenerateBullets generateBullets)
         {
@@ -21,6 +21,11 @@ namespace _Project.Scripts.Infrastructure.Player.Shoot
                 return;
 
             _generateBullets.Process(_pointBullet);
+        }
+
+        public void IncreaseAttackSpeed(float percent)
+        {
+            _generateBullets?.IncreaseSpeedShoot(percent);
         }
     }
 }

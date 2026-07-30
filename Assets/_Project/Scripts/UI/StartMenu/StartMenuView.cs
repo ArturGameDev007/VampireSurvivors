@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace _Project.Scripts.UI
+namespace _Project.Scripts.UI.StartMenu
 {
     public class StartMenuView : MonoBehaviour
     {

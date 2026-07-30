@@ -8,6 +8,7 @@ namespace _Project.Scripts.Infrastructure.Player
     {
         private readonly List<Character> _players = new();
         
+        public List<Character> AddPlayers => _players;
 
         public void Register(Character player)
         {
@@ -21,7 +22,7 @@ namespace _Project.Scripts.Infrastructure.Player
         {
             _players.Remove(player);
         }
-        
+
         public Character GetClosestTo(Vector3 position)
         {
             Character closest = null;

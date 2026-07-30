@@ -1,5 +1,4 @@
 using _Project.Scripts.Infrastructure.EnemyInformation;
-using _Project.Scripts.UI.Health;
 using Fusion;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,23 +7,28 @@ namespace _Project.Scripts.Infrastructure.Player
 {
     public class Character : NetworkBehaviour
     {
-        [SerializeField] private HealthBarView _healthBarView;
-        [SerializeField] private WorldHealthBar _worldHealth;
-        [SerializeField] private PositionPlayers _positionPlayers;
-
-        [field: SerializeField] public float MaxHealth { get; private set; } = 100f;
+        [SerializeField] private PlayerBonus _playerBonus;
+        
+        [SerializeField] private float _baseMaxHealth = 100f;
+        
+        [field: SerializeField] public float MaxExperience { get; private set; } = 100f;
 
         private Camera _mainCamera;
         private PlayerRegistry _playerRegistry;
         private PlayerMovement _playerMovement;
+        private BonusApplier _bonusApplier;
+        
+        [Networked] public bool IsDead { get; private set; }
 
-        private bool _isDead;
-
+        [Networked] public float CurrentExperience { get; private set; }
         [Networked] public float CurrentHealth { get; private set; }
+        [Networked] public float MaxHealth { get; private set; }
+        [Networked] public int CurrentLevel { get; private set; }
 
-        public void Initialize(PlayerRegistry playerRegistry)
+        public void Initialize(PlayerRegistry playerRegistry, BonusApplier bonusApplier)
         {
             _playerRegistry = playerRegistry;
+            _bonusApplier = bonusApplier;
         }
 
         public override void Spawned()
@@ -32,44 +36,26 @@ namespace _Project.Scripts.Infrastructure.Player
             _playerMovement = GetComponent<PlayerMovement>();
 
             if (Runner.IsServer)
+            {
+                MaxHealth = _baseMaxHealth;
                 CurrentHealth = MaxHealth;
+                CurrentLevel = 1;
+            }
 
-            if (_healthBarView != null)
-                _healthBarView.gameObject.SetActive(HasInputAuthority);
+            gameObject.name = HasInputAuthority ? "[LOCAL_PLAYER]" : $"[REMOTE_PLAYER]";
 
-            if (_worldHealth != null)
-                _worldHealth.gameObject.SetActive(!HasInputAuthority);
-            
             if (!HasInputAuthority)
                 return;
 
             _mainCamera = Camera.main;
 
             if (_mainCamera != null && _mainCamera.TryGetComponent(out CameraFollow cameraFollow))
-            {
                 cameraFollow.Initialize(this);
-            }
-        }
-
-        public override void Render()
-        {
-            if (HasInputAuthority)
-            {
-                _healthBarView?.UpdateHealthBar(CurrentHealth, MaxHealth);
-            }
-            else
-            {
-                _worldHealth?.UpdateHealthBar(CurrentHealth, MaxHealth);
-                UpdateCoordinateUI();
-            }
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
         {
-            if (_isDead && HasInputAuthority)
-            {
-                ReturnToLobby();
-            }
+            NotifyDeath();
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -81,9 +67,57 @@ namespace _Project.Scripts.Infrastructure.Player
                 TakeDamage(enemy.Damage);
         }
 
+        public void Heal(float amount)
+        {
+            if (!HasStateAuthority)
+                return;
+
+            CurrentHealth = Mathf.Clamp(CurrentHealth + amount, 0f, MaxHealth);
+        }
+
+        public void Experience(float amount)
+        {
+            if (!HasStateAuthority)
+                return;
+
+            CurrentExperience = Mathf.Clamp(CurrentExperience + amount, 0f, MaxExperience);
+        }
+
+        public void NextLevel(int level)
+        {
+            if (!HasStateAuthority)
+                return;
+
+            CurrentLevel = level;
+            CurrentHealth = MaxHealth;
+            CurrentExperience = 0f;
+            
+            _bonusApplier.ApplyRandomBonus(this, _playerBonus, _playerMovement);
+        }
+
+        public void IncreaseMaxHealth(float percent)
+        {
+            if (!HasStateAuthority)
+                return;
+
+            MaxHealth += MaxHealth * percent;
+            CurrentHealth = MaxHealth;
+        }
+        
+        private void NotifyDeath()
+        {
+            if (HasInputAuthority)
+            {
+                ReturnToLobby();
+            }
+        }
+
         private void Die()
         {
-            _isDead = true;
+            if (!HasStateAuthority)
+                return;
+
+            IsDead = true;
 
             _playerRegistry?.Unregister(this);
 
@@ -99,21 +133,15 @@ namespace _Project.Scripts.Infrastructure.Player
                 Die();
         }
 
-        private void UpdateCoordinateUI()
-        {
-            if (_playerMovement == null || _playerMovement.Position == null)
-                return;
-
-            Vector2 direction = _playerMovement.Position;
-            string displayText = $"(X: {direction.x:F2}, Y: {direction.y:F2})";
-
-            _positionPlayers.SetCoordinateText(displayText);
-        }
-
         private void ReturnToLobby()
         {
             if (Runner != null)
-                Runner.Shutdown(destroyGameObject: true);
+            {
+                PlayerPrefs.SetInt($"BannedRoom - {Runner.SessionInfo.Name}", 1);
+                PlayerPrefs.Save();
+                
+                Runner.Shutdown(destroyGameObject: false);
+            }
 
             SceneManager.LoadScene("MainMenu");
         }

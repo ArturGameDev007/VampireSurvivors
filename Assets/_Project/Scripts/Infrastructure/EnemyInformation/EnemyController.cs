@@ -24,14 +24,6 @@ namespace _Project.Scripts.Infrastructure.EnemyInformation
             _playerRegistry = playerRegistry;
         }
 
-        // public void Initialize(IPlayerProvider player)
-        // {
-        //     _playerProvider = player;
-        //
-        //     if (_playerProvider != null && _playerProvider.PlayerTransform != null)
-        //         Target = _playerProvider.PlayerTransform;
-        // }
-
         public override void Spawned()
         {
             _rigidbody2D = GetComponent<Rigidbody2D>();
@@ -61,9 +53,6 @@ namespace _Project.Scripts.Infrastructure.EnemyInformation
             Vector2 nextPosition = Vector2.MoveTowards(currentPosition, target, _speed * Runner.DeltaTime);
 
             _rigidbody2D.MovePosition(nextPosition);
-            // Vector2 nextPosition = (target - currentPosition).normalized;
-
-            // _rigidbody2D.velocity = nextPosition * _speed;
         }
     }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace _Project.Scripts.UI.PlayerMovement
+namespace _Project.Scripts.UI.CharacterMovementController
 {
     public class FixedJoystickController : MonoBehaviour, IFixedJoystickController
     {
